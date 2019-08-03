@@ -14,18 +14,22 @@ import Encryptor from '../Encryptor'
 
 @connect('store') @observer
 class Main extends ConnectedComponent<{}, Stores> {
-  handleSubmit = (data: OmniFormState) => {
+  handleSubmit = async (data: OmniFormState) => {
     const { store } = this.stores
     if (!store.groups || store.currentGroupId === undefined) {
       return
     }
     const group = store.groups.items[store.currentGroupId].id
+    let decryptedMessage: any = ''
+    if (data.message) {
+      decryptedMessage = await Encryptor.encryptMessage(data.message || '', store.currentGroupId)
+    }
     if (data.file) {
-      store.addFile(group, data.file, Encryptor.encryptMessage(data.message || ''))
+      store.addFile(group, data.file, decryptedMessage)
       // store.addFile(group, data.file, data.message || '')
     } else if (data.message) {
       // encrypt using aes
-       store.addMessage(group, Encryptor.encryptMessage(data.message))
+       store.addMessage(group, decryptedMessage)
       // store.addMessage(group, data.message)
     }
   }

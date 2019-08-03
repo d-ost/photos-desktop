@@ -284,9 +284,6 @@ export class AppStore implements Store {
             if (feedItem.user && this.profile) {
               feedItem.removable = feedItem.user.address === this.profile.address
             }
-            if (payload.body) {
-              payload.body = Encryptor.decryptMessage(payload.body)
-            }
             switch (type) {
               case '/Files':
                 feedItem.summary = `added a photo`
@@ -299,7 +296,11 @@ export class AppStore implements Store {
                 })
                 break
               case '/Text':
-                feedItem.extraText = payload.body
+                if (payload.body) {
+                  Encryptor.decryptMessage(payload.body, group.id).then(function (decryptedMessage: any) {
+                    feedItem.extraText = decryptedMessage
+                  })
+                }
                 break
               case '/Join':
                 feedItem.summary = `joined the '${group.name}' group`
