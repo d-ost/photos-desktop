@@ -105,6 +105,7 @@ export class AppStore implements Store {
         const schema = (await textile.schemas.defaults()).media
         const key = `textile_photos-shared-${uuid()}`
         await textile.threads.add(name, schema, key, 'open', 'shared')
+        //TODO: Add logic here to generate AES Salt, create a NuCypher policy and encrypt a secret and store the encrypted value on blockchain
         await this.fetchGroups()
         runInAction(() => {
           this.currentGroupId = this.groups ? this.groups.items.length - 1 : 0
@@ -148,6 +149,7 @@ export class AppStore implements Store {
       if (reject) {
         await textile.invites.ignore(invite.id)
       } else {
+        //TODO: Add logic to
         await textile.invites.accept(invite.id, invite.key)
       }
       runInAction(() => {
@@ -165,6 +167,7 @@ export class AppStore implements Store {
   }
   async addInvite(groupId: string, address?: string) {
     try {
+      //TODO: Add logic to create encryption keys for invitee and add the public key in the NuCypher policy
       if (!address) {
         const invite = await textile.invites.addExternal(groupId)
         if (this.currentGroup) {
