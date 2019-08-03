@@ -10,6 +10,7 @@ import copy from 'copy-to-clipboard'
 import { Grid, Sidebar, Image, Feed, Confirm } from 'semantic-ui-react'
 import { ConnectedComponent, connect } from '../Components/ConnectedComponent'
 import { Stores } from '../Store'
+import Encryptor from '../Encryptor'
 
 @connect('store') @observer
 class Main extends ConnectedComponent<{}, Stores> {
@@ -20,11 +21,15 @@ class Main extends ConnectedComponent<{}, Stores> {
     }
     const group = store.groups.items[store.currentGroupId].id
     if (data.file) {
-      store.addFile(group, data.file, data.message || '')
+      store.addFile(group, data.file, Encryptor.encryptMessage(data.message || ''))
+      // store.addFile(group, data.file, data.message || '')
     } else if (data.message) {
-      store.addMessage(group, data.message)
+      // encrypt using aes
+       store.addMessage(group, Encryptor.encryptMessage(data.message))
+      // store.addMessage(group, data.message)
     }
   }
+
   handleJoinCancel = () => {
     const { store } = this.stores
     if (store.invite) {

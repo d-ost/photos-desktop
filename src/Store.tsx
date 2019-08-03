@@ -5,6 +5,7 @@ import { SemanticSIZES, FeedEventProps } from 'semantic-ui-react'
 import uuid from 'uuid/v4'
 import isElectron from 'is-electron'
 import copy from 'copy-to-clipboard'
+import Encryptor from './Encryptor'
 const { ipcRenderer } = window
 
 // tslint:disable-next-line:no-empty-interface
@@ -282,6 +283,9 @@ export class AppStore implements Store {
             }
             if (feedItem.user && this.profile) {
               feedItem.removable = feedItem.user.address === this.profile.address
+            }
+            if (payload.body) {
+              payload.body = Encryptor.decryptMessage(payload.body)
             }
             switch (type) {
               case '/Files':
