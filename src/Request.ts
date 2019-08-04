@@ -1,8 +1,4 @@
-/**
- * Request Manager
- *
- * @module lib/request
- */
+
 const https = require('https')
   , http = require('http')
   , url = require('url')

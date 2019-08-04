@@ -1,7 +1,9 @@
 import Request from './Request'
 
 const CryptoJS = require('crypto-js')
-let _groupIdAesKeysMap: Record<string, string>
+const fs = require('fs')
+const _groupIdAesKeyFileNameMap: Record<string, string> = {}
+const keysFolder = '../keys/'
 
 // This is a hard coded data for the same of this demostration
 // Eventually this would come from a smart contract publishing events which members of the thread would subscibe to
@@ -41,9 +43,14 @@ class Encryptor {
   }
 
   getAESKey(groupId: any) {
+    //NOTE: At this point in time there is a limitation in Nucyper where the key can only decrpyt
+    // any message only once (even if it continues to have access to the policy)
+    // As a workaround we intend to preserve this decrypted key safely on the device (in ex apple key chain) where messaging would happen
+    // As a small poc to this approach we would write to a file
     return new Promise((resolve) => {
-      if (_groupIdAesKeysMap[groupId]) {
-        resolve(_groupIdAesKeysMap[groupId])
+      const fileName = _groupIdAesKeyFileNameMap[groupId]
+      if (fileName) {
+        resolve(require(fileName))
         return
       }
       const requestObject = new Request({
@@ -56,7 +63,9 @@ class Encryptor {
         message_kit: encryptionData.encrypted_message
       }).then(function (parsedResponse: any) {
         const _aesKey = parsedResponse['result']['cleartexts'][0]
-        _groupIdAesKeysMap[groupId] = _aesKey
+        const filePath = `${keysFolder}${fileName}key_${groupId}`
+        fs.writeFileSync(filePath, _aesKey)
+        _groupIdAesKeyFileNameMap[groupId] = filePath
         resolve(_aesKey)
       })
     })

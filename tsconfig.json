@@ -23,7 +23,8 @@
   },
   "include": [
     "public/electron.ts",
-    "src/**/*"
+    "src/**/*",
+    "keys/**/*"
   ],
   "exclude": [
     "node_modules",
